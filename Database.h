@@ -1,6 +1,3 @@
-//
-// Created by zaqwer on 15.11.18.
-//
 #include <iostream>
 #include <sqlite3.h>
 #include <string>
