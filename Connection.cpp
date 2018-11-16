@@ -5,7 +5,7 @@
 Connection::Connection(int sock, std::shared_ptr<Database> db)
 {
     this->sock = sock;
-    terminator = 0;
+    terminator = 1;
     thread = std::thread([this] {connection_handler(); });
     this->db = db;
     thread.detach();
@@ -39,7 +39,7 @@ void Connection::connection_handler()
 {
     char buf[128];
     int bytes_read = 0;
-    while(sock && !terminator)
+    while(sock && terminator > 0)
     {
         std::memset(buf, 0, sizeof(buf)); // Очистка буфера
         bytes_read = recv(sock, buf, 1024, 0);
@@ -56,10 +56,10 @@ void Connection::connection_handler()
 
 void Connection::terminate()
 {
-    this->terminator = 1;
+    this->terminator = -1;
 }
 
 int Connection::isActive()
 {
-    return !terminator;
+    return terminator > 0;
 }

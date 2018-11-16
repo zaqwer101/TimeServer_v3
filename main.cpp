@@ -14,7 +14,7 @@ static void signalHandler(int signal)
 int main()
 {
     auto db = std::make_shared<Database>("../timezone.db");
-    static auto server = std::make_unique<Server>(db, 3228);
+    static auto server = std::make_unique<Server>(db, 3229);
     std::signal(SIGTERM, signalHandler);
     server->start();
     return 0;

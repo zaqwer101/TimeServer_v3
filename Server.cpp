@@ -2,7 +2,7 @@
 
 Server::Server(std::shared_ptr<Database> db, int port)
 {
-    terminator = 0;
+    terminator = 1;
     this->db = db;
     struct sockaddr_in sock_addr;
     sock_addr.sin_family = AF_INET;
@@ -36,23 +36,24 @@ void Server::removeConnection(int index)
 void Server::start()
 {
     listen(this->sock_listener, 10);
-    while(sock_listener && !terminator)
+    while(sock_listener && terminator > 0)
     {
         removeDeadConnections();
         sock = accept(sock_listener, NULL, NULL);
         auto connection = std::make_unique<Connection>(sock, db);
         this->addConnection(std::move(connection));
+        std::cout << "Currently " << connections.size() << " connections; " << std::endl;
     }
     stop();
 }
 
 void Server::stop()
 {
+    terminator = -1;
     for(int i = 0; i < connections.size(); i++)
     {
         removeConnection(i);
     }
-    terminator = 1;
     std::cout << "Server stopped; " << std::endl;
 }
 
@@ -63,8 +64,10 @@ void Server::removeDeadConnections()
         if(!connections[i]->isActive())
         {
             removeConnection(i);
+            i--;
         }
     }
+
 }
 
 
