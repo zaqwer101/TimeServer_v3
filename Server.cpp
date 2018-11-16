@@ -38,10 +38,10 @@ void Server::start()
     listen(this->sock_listener, 10);
     while(sock_listener && terminator > 0)
     {
-        removeDeadConnections();
         sock = accept(sock_listener, NULL, NULL);
         auto connection = std::make_unique<Connection>(sock, db);
         this->addConnection(std::move(connection));
+        removeDeadConnections();
         std::cout << "Currently " << connections.size() << " connections; " << std::endl;
     }
     stop();
@@ -64,12 +64,7 @@ void Server::removeDeadConnections()
         if(!connections[i]->isActive())
         {
             removeConnection(i);
-            i--;
+            i = 0;
         }
     }
-
 }
-
-
-
-
